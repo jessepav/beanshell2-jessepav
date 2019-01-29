@@ -482,6 +482,12 @@
     <ant dir="docs/manual"/>
     -->
   </target>
+  
+  <target name="zipjavadoc" depends="javadoc">
+    <delete file="${javadoc-zip}"/>
+    <zip zipfile="${javadoc-zip}" basedir="${javadoc-dir}"/>
+  </target>
+
 
   <target name="bshservlet-war" depends="compile" unless="exclude-servlet">
     <war warfile="${bshservlet-war}"
