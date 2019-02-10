@@ -402,6 +402,7 @@
   <target name="zipsrc" depends="_distdir">
     <delete file="${src-zip}"/>
     <zip zipfile="${src-zip}">
+      <!--
       <zipfileset dir="." prefix="BeanShell2-${version}">
         <exclude name="classes*"/>
         <exclude name="classes/**/*"/>
@@ -409,9 +410,11 @@
         <exclude name="dist/**/*"/>
         <exclude name="*javadoc*"/>
         <exclude name="javadoc/**/*"/>
-        <!--exclude name="docs/**/*"/-->
+        <exclude name="docs/**/*"/>
         <exclude name="**/CVS"/>
       </zipfileset>
+      -->
+      <zipfileset dir="${src-dir}/bsh" prefix="bsh"/>
     </zip>
   </target>
 
