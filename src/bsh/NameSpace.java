@@ -747,8 +747,8 @@ public class NameSpace implements Serializable, BshClassManager.Listener, NameSo
      */
     public void unimportPackage(String name) {
         if (importedPackages != null) {
-            importedPackages.remove(name);
-            nameSpaceChanged();
+            if (importedPackages.remove(name))
+                nameSpaceChanged();
         }
     }
 
@@ -762,6 +762,27 @@ public class NameSpace implements Serializable, BshClassManager.Listener, NameSo
         if (importedCommands == null)
             importedCommands = new ArrayList<String>();
 
+        name = formatCommandsPathName(name);
+
+        // If it exists, remove it and add it at the end (avoid memory leak)
+        importedCommands.remove(name);
+
+        importedCommands.add(name);
+        nameSpaceChanged();
+    }
+    
+    /**
+     * Unimport a commands package name, if present.
+     */
+    public void unimportCommands(String name) {
+        if (importedCommands != null) {
+            name = formatCommandsPathName(name);
+            if (importedCommands.remove(name))
+                nameSpaceChanged();
+        }
+    }
+    
+    private String formatCommandsPathName(String name) {
         // dots to slashes
         name = name.replace('.', '/');
         // absolute
@@ -770,13 +791,9 @@ public class NameSpace implements Serializable, BshClassManager.Listener, NameSo
         // remove trailing (but preserve case of simple "/")
         if (name.length() > 1 && name.endsWith("/"))
             name = name.substring(0, name.length() - 1);
-
-        // If it exists, remove it and add it at the end (avoid memory leak)
-        importedCommands.remove(name);
-
-        importedCommands.add(name);
-        nameSpaceChanged();
+        return name;
     }
+    
 
     /**
      * A command is a scripted method or compiled command class implementing a specified method signature.
