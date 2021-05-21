@@ -70,11 +70,14 @@ public class NameSpace implements Serializable, BshClassManager.Listener, NameSo
 
     private static final long serialVersionUID = 5004976946651004751L;
 
+    private static final boolean minimalDefaultImports;
+
     public static final NameSpace JAVACODE =
         new NameSpace((BshClassManager) null, "Called from compiled Java code.");
 
     static {
         JAVACODE.isMethod = true;
+        minimalDefaultImports = System.getProperty("bsh.minimalDefaultImports", "false").equals("true");
     }
 
     // Begin instance data
@@ -1243,24 +1246,34 @@ public class NameSpace implements Serializable, BshClassManager.Listener, NameSo
      * importPackage("java.lang");
      * importCommands("/bsh/commands");
      * </pre>
+     * However, you can override this behavior by setting the System property
+     * <tt>bsh.minimalDefaultImports=true</tt>, in which case the default imports become:
+     * <pre>
+     * importClass("bsh.EvalError");
+     * importClass("bsh.Interpreter");
+     * importPackage("java.lang");
+     * </pre>
      */
     public void loadDefaultImports() {
-        /**
+        /*
          Note: the resolver looks through these in reverse order, per
          precedence rules...  so for max efficiency put the most common
          ones later.
          */
         importClass("bsh.EvalError");
         importClass("bsh.Interpreter");
-        importPackage("javax.swing.event");
-        importPackage("javax.swing");
-        importPackage("java.awt.event");
-        importPackage("java.awt");
-        importPackage("java.net");
-        importPackage("java.util");
-        importPackage("java.io");
+        if (!minimalDefaultImports) {
+            importPackage("javax.swing.event");
+            importPackage("javax.swing");
+            importPackage("java.awt.event");
+            importPackage("java.awt");
+            importPackage("java.net");
+            importPackage("java.util");
+            importPackage("java.io");
+        }
         importPackage("java.lang");
-        importCommands("/bsh/commands");
+        if (!minimalDefaultImports)
+            importCommands("/bsh/commands");
     }
 
     /**
